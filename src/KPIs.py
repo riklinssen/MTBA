@@ -10,9 +10,7 @@ import matplotlib.gridspec as gridspec
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
-
 from pathlib import Path
-
 
 import scipy.stats as st
 ##########################BOILERPLATE##########
@@ -84,56 +82,56 @@ subset_colors={'Total': '#0C884A' ,'Sindh': '#630235','Punjab': '#0B9CDA'}
 
 
 idx=pd.IndexSlice
-##try first graph
-title_anno_opts = dict(xy=(0, 0.5), size='medium', xycoords='axes fraction',
-                       va='center', ha='center', rotation=90)
-outcomes=['ind_Gcm_18']
-ylab='% of girls married\n<18 yrs old'
-filename=str(outcomes) +'.svg'
-sns.set_style('ticks')
-sns.set_context(context='notebook')
-fig, axes=plt.subplots(nrows=3, ncols=2, sharex='col', sharey='col',   gridspec_kw={'width_ratios': [1, 3,]}, figsize=(6,(6*1.61)))
-#titlecol
+# ##try first graph
+# title_anno_opts = dict(xy=(0, 0.5), size='medium', xycoords='axes fraction',
+#                        va='center', ha='center', rotation=90)
+# outcomes=['ind_Gcm_18']
+# ylab='% of girls married\n<18 yrs old'
+# filename=str(outcomes) +'.svg'
+# sns.set_style('ticks')
+# sns.set_context(context='notebook')
+# fig, axes=plt.subplots(nrows=3, ncols=2, sharex='col', sharey='col',   gridspec_kw={'width_ratios': [1, 3,]}, figsize=(6,(6*1.61)))
+# #titlecol
 
-for i, sub in enumerate(subset_colors.keys()): 
-    axes[i,0].annotate(sub, **title_anno_opts, color=subset_colors[sub])
-    # remove spines
-    axes[i,0].axis('off')
-for i, (sub) in enumerate(subset_colors.keys()):
-    print(sub)
-    if sub=='Total':
-        stats=get_mean_ci_in_df(clean, ['grouping_target', 'grouping_period'],outcomes)
-    if sub=='Sindh':
-        stats=get_mean_ci_in_df(sindh, ['grouping_target', 'grouping_period'],outcomes)
-    if sub=='Punjab':
-        stats=get_mean_ci_in_df(punjab, ['grouping_target', 'grouping_period'],outcomes)
-    stats.columns=['mean', 'sem', 'lower', 'upper', 'order']
-    #target group
-    target=stats.loc[idx['Target group',:],:].droplevel(0).sort_values(by='order')
-    axes[i,1].plot(target.index, target['mean'], marker='o', color=subset_colors[sub])
-    #axes[i,1].line(target.index, target['mean'], color=subset_colors[sub])
-    axes[i,1].fill_between(target.index,target['lower'], target['upper'], color=subset_colors[sub], alpha=0.2)
-    #labels
-    for key, row in target.iterrows():
-        axes[i,1].text(x=row['order']-1, y=row['mean']+0.05, s='{:.0%}'.format(row['mean']), ha='center', size='small', color=subset_colors[sub])
+# for i, sub in enumerate(subset_colors.keys()): 
+#     axes[i,0].annotate(sub, **title_anno_opts, color=subset_colors[sub])
+#     # remove spines
+#     axes[i,0].axis('off')
+# for i, (sub) in enumerate(subset_colors.keys()):
+#     print(sub)
+#     if sub=='Total':
+#         stats=get_mean_ci_in_df(clean, ['grouping_target', 'grouping_period'],outcomes)
+#     if sub=='Sindh':
+#         stats=get_mean_ci_in_df(sindh, ['grouping_target', 'grouping_period'],outcomes)
+#     if sub=='Punjab':
+#         stats=get_mean_ci_in_df(punjab, ['grouping_target', 'grouping_period'],outcomes)
+#     stats.columns=['mean', 'sem', 'lower', 'upper', 'order']
+#     #target group
+#     target=stats.loc[idx['Target group',:],:].droplevel(0).sort_values(by='order')
+#     axes[i,1].plot(target.index, target['mean'], marker='o', color=subset_colors[sub])
+#     #axes[i,1].line(target.index, target['mean'], color=subset_colors[sub])
+#     axes[i,1].fill_between(target.index,target['lower'], target['upper'], color=subset_colors[sub], alpha=0.2)
+#     #labels
+#     for key, row in target.iterrows():
+#         axes[i,1].text(x=row['order']-1, y=row['mean']+0.05, s='{:.0%}'.format(row['mean']), ha='center', size='small', color=subset_colors[sub])
     
     
-    #comparison
-    comp=stats.loc[idx['Comparison group',:],:].droplevel(0).sort_values(by='order')
-    axes[i,1].plot(comp.index, comp['mean'], marker='.', linestyle=':', color='grey', label='Comparison\ngroup')
-    #axes[i,1].line(target.index, target['mean'], color=subset_colors[sub])
-    axes[i,1].fill_between(comp.index,comp['lower'], comp['upper'], color='grey', alpha=0.2)
+#     #comparison
+#     comp=stats.loc[idx['Comparison group',:],:].droplevel(0).sort_values(by='order')
+#     axes[i,1].plot(comp.index, comp['mean'], marker='.', linestyle=':', color='grey', label='Comparison\ngroup')
+#     #axes[i,1].line(target.index, target['mean'], color=subset_colors[sub])
+#     axes[i,1].fill_between(comp.index,comp['lower'], comp['upper'], color='grey', alpha=0.2)
 
 
-#some settings on all axes.
-axes[0,1].legend(loc='upper center', bbox_to_anchor=(0.8, 1.15),
-          ncol=1, fontsize='small',  fancybox=False, shadow=False, frameon=False)   
-for ax in fig.axes: 
-    ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=0))
-    sns.despine(ax=ax)
-    ax.set_ylabel(ylab, fontstyle='oblique')
-fig.text(0,0, 'Source: MTBA Endline studies n total='+str(len(clean[outcomes].dropna())) + ' girls.\nShaded areas represent 95% CI of the mean.', fontsize='small', color='grey')
-fig.savefig(graphs_path/filename)
+# #some settings on all axes.
+# axes[0,1].legend(loc='upper center', bbox_to_anchor=(0.8, 1.15),
+#           ncol=1, fontsize='small',  fancybox=False, shadow=False, frameon=False)   
+# for ax in fig.axes: 
+#     ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=0))
+#     sns.despine(ax=ax)
+#     ax.set_ylabel(ylab, fontstyle='oblique')
+# fig.text(0,0, 'Source: MTBA Endline studies n total='+str(len(clean[outcomes].dropna())) + ' girls.\nShaded areas represent 95% CI of the mean.', fontsize='small', color='grey')
+# fig.savefig(graphs_path/filename)
 
 
 
@@ -351,7 +349,7 @@ def make_cov_dum_fig(outcomes, ylab, suptit):
         fig.suptitle(suptit, x=0, y=1.05, ha='left', size='medium', fontweight='bold', color='Black')
         fig.text(0,-0.3, 'Source: MTBA Endline studies\nError bars represent 95% CI of the mean.', fontsize='small', color='grey')
         fig.show()
-        fig.savefig(graphs_path/filename)
+        fig.savefig(graphs_path/filename, bbox_inches='tight')
         
 
 make_cov_dum_fig(['ind_Goccupation_covid'], '%', '% girls with negative change in occupation because of covid')
