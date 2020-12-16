@@ -393,7 +393,7 @@ title_anno_opts = dict(xy=(-0.5, 0.5), size='medium', xycoords='axes fraction',
                     va='center', ha='center', rotation=90)
 
 def make_kpi_fig_likert(outcomes, ylab, suptit, ylowlab, yhighlab):
-    """returns fig in graphs path for outcomes (dummys/%)
+    """returns fig in graphs path for outcomes (5-tem likert scales)
 
     Parameters
     ----------
