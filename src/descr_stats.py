@@ -36,7 +36,7 @@ labels_path = currentwd_path.parent/"docs"
 graphs_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\visuals")
 
 
-clean=pd.read_stata(cleandata_path/"4. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
+clean=pd.read_stata(cleandata_path/"5. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
 
 
 #make some groupings
@@ -47,9 +47,105 @@ clean['grouping_province']=clean['code_province'].astype(str).str.replace('\d+',
 clean['grouping_total']='Total'
 
 
+##varlabel dict
+varlabel_df = pd.read_excel(labels_path/"mtba_endline_VariableLabels_viz.xlsx", usecols=['varname','label'], index_col='varname')
 
+varlabel_dict=varlabel_df['label'].to_dict()          
 
 ##descriptive stats. 
+
+###number of respondents. 
+period_names_col = {
+    'Baseline': '#0B9CDA',
+    'Midline': '#53297D',
+    'Endline': '#630235'}
+
+#anno options for headings
+title_anno_opts = dict(xy=(0.5, 0.5), size='small', xycoords='axes fraction',
+                       va='center', ha='center')
+
+idx=pd.IndexSlice
+
+
+filename=graphs_path/'nrofobs_by_time_province.svg'
+sns.set_style('ticks')
+
+fig, axes = plt.subplots(nrows=4, ncols=len(period_names_col.keys()), sharex='col', sharey='row', figsize=(
+    4, 4), gridspec_kw={'height_ratios': [1, 3, 3, 3 ]})
+
+#totals
+data =clean.groupby(['grouping_period', 'grouping_total']).size().to_frame()
+data.columns=['nrobs']
+
+data['label']='no. of girls'
+# title row.
+for i,period in enumerate(period_names_col.keys()):
+    axes[0,i].annotate(period, **title_anno_opts, color=period_names_col[period])
+    # remove spines
+    axes[0,i].axis('off')
+
+#total
+for i,period in enumerate(period_names_col.keys()):
+    #axes[1,i].set_xlim(0, 1)
+    sel=data.loc[idx[period,:,:],:]
+    axes[1,i].barh(y=sel['label'], width=sel['nrobs'], color=period_names_col[period])
+    # remove spines)
+    # labels
+    for p in axes[1,i].patches:
+        # get_width pulls left or right; get_y pushes up or down
+        axes[1,i].text(p.get_width()/2, (p.get_y()+p.get_height()/2), "{:,}".format(
+            p.get_width()), color='white', verticalalignment='center', horizontalalignment='center', size='small')
+    if i == 0:
+        axes[1,i].set_ylabel('Total', fontstyle='oblique')
+    
+    sns.despine(ax=axes[1,i])
+
+
+#sindh
+data =clean.loc[clean['grouping_province']=='Sindh'].groupby(['grouping_period', 'grouping_total']).size().to_frame()
+data.columns=['nrobs']
+data['label']='no. of girls'
+for i,period in enumerate(period_names_col.keys()):
+    sel=data.loc[idx[period,:,:],:]
+    axes[2,i].barh(y=sel['label'], width=sel['nrobs'], color=period_names_col[period])
+    # remove spines)
+    # labels
+    for p in axes[2,i].patches:
+        # get_width pulls left or right; get_y pushes up or down
+        axes[2,i].text(p.get_width()+0.05,  (p.get_y()+p.get_height()/2), "{:,}".format(
+            p.get_width()), color=p.get_facecolor(), verticalalignment='center', size='small')
+    if i == 0:
+        axes[2,i].set_ylabel('Sindh', fontstyle='oblique')
+    
+    sns.despine(ax=axes[2,i])
+
+
+#punjab
+data =clean.loc[clean['grouping_province']=='Punjab'].groupby(['grouping_period', 'grouping_total']).size().to_frame()
+data.columns=['nrobs']
+data['label']='no. of girls'
+for i,period in enumerate(period_names_col.keys()):
+    sel=data.loc[idx[period,:,:],:]
+    axes[3,i].barh(y=sel['label'], width=sel['nrobs'], color=period_names_col[period])
+    # remove spines)
+    # labels
+    for p in axes[3,i].patches:
+        # get_width pulls left or right; get_y pushes up or down
+        axes[3,i].text(p.get_width()+0.05,  (p.get_y()+p.get_height()/2), "{:,}".format(
+            p.get_width()), color=p.get_facecolor(), verticalalignment='center', size='small')
+    if i == 0:
+        axes[3,i].set_ylabel('Punjab', fontstyle='oblique')
+    
+    sns.despine(ax=axes[3,i])
+
+#some stuff on all axes.
+for ax in fig.axes: 
+    ax.set_xlim(0,1200)
+fig.savefig(filename, bbox_inches='tight')
+
+
+
+
 #Girls
 ##baseline, midline, endline in cols, indicators in rows. 
 period_names_col = {
@@ -57,9 +153,7 @@ period_names_col = {
     'Midline': '#53297D',
     'Endline': '#630235'}
 
-varlabel_df = pd.read_excel(labels_path/"mtba_endline_VariableLabels_viz.xlsx", usecols=['varname','label'], index_col='varname')
-
-varlabel_dict=varlabel_df['label'].to_dict()                            
+                  
 
 #anno options for headings
 title_anno_opts = dict(xy=(0.5, 0.5), size='small', xycoords='axes fraction',
@@ -130,7 +224,6 @@ data =clean.loc[clean['grouping_province']=='Punjab'].groupby(['grouping_period'
 data.index.names=['period', 'group', 'ind']
 data.columns=['prop']
 data['label']=data.index.get_level_values(2)
-data['label']=data['label'].map(varlabel_dict)
 for i,period in enumerate(period_names_col.keys()):
     axes[3,i].set_xlim(0, 1)
     sel=data.loc[idx[period,:,:],:]

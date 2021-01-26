@@ -35,7 +35,7 @@ labels_path = currentwd_path.parent/"docs"
 graphs_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\visuals")
 
 
-clean=pd.read_stata(cleandata_path/"4. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
+clean=pd.read_stata(cleandata_path/"5. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
 
 
 #make some groupings
@@ -364,7 +364,7 @@ print(clean.groupby(['grouping_province','grouping_target', 'grouping_period'] )
 
 make_cov_dum_fig(['ind_Gschool_covid'], '%', '% Girls reporting negative effect school att. because of covid')
 
-make_cov_dum_fig(['ind_HHschool_covid'], '%', '% Households reporting negative effect school att. because of covid')
+#make_cov_dum_fig(['ind_HHschool_covid'], '%', '% Households reporting negative effect school att. because of covid')
 
 make_cov_dum_fig(['ind_HHschool_girlsreturn_covid'], '%', '% Households reporting that girls will return to school after covid')
 
@@ -372,7 +372,7 @@ make_cov_dum_fig(['ind_HHschool_girlsreturn_covid'], '%', '% Households reportin
 make_cov_dum_fig(['ind_HHschool_boysreturn_covid'], '%', '% Households reporting that boys will return to school after covid')
 
 ##################################reload clean dataset for likert5 func
-clean=pd.read_stata(cleandata_path/"4. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
+clean=pd.read_stata(cleandata_path/"5. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
 
 
 #make some groupings
@@ -482,4 +482,4 @@ make_kpi_fig_likert(['ind_Gstat_selfesteem'], 'mean', 'Statement:I see myself as
 
 make_kpi_fig_likert(['ind_Gpeoplechangecomm'], 'mean', 'Statement:Do you feel that people like yourself can generally change things\nin your community if they want to?', 'No, not at all -1', ' Yes, very easily-5')
 
-make_kpi_fig_likert(['ind_comrejectcm'], 'mean', 'Community members who reject child marriage', 'Strongly disagree-1', 'Strongly agree-5')
+#make_kpi_fig_likert(['ind_comrejectcm'], 'mean', 'Community members who reject child marriage', 'Strongly disagree-1', 'Strongly agree-5')
