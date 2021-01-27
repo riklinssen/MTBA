@@ -28,7 +28,8 @@ Source data for this project not public (as of Dec 2020) available on request.
 │   ├───graphs              <-visualisations in report (not on github)
 │   ├───descr_stats.py      <-script to generate descriptive statistics for presentations
 │   ├───KPI_scales.py       <-script for visuals KPI's for scales (loaded in CSV instead of dta)
-│   └───KPIs.py              <-script to generate visuals for KPI's 
+│   └───KPIs.py              <-script to generate visuals for KPI's
+│   ├───descr_stats_report_combined.py      <-script to generate descriptive statistics for report
 │
 └───requirements.txt   <- file that lists python packages used. Use pip install -r requirements.txt
 ```
