@@ -54,7 +54,10 @@ for dta in short:
         group='affectedcm'
     if os.path.dirname(dta).endswith('NeitheratriskaffectedCM'): 
         group='neithercm'
-     
+    if os.path.dirname(dta).endswith('HHfemale'): 
+        group='hhfemale' 
+    if os.path.dirname(dta).endswith('HHmale'): 
+        group='hhmale' 
     #source indicator
     source='Short term set (midline-endline)'
     rawdf=pd.read_stata(dta)
@@ -136,7 +139,10 @@ for dta in longt:
         group='affectedcm'
     if os.path.dirname(dta).endswith('NeitheratriskaffectedCM'): 
         group='neithercm'
-     
+    if os.path.dirname(dta).endswith('HHfemale'): 
+        group='hhfemale' 
+    if os.path.dirname(dta).endswith('HHmale'): 
+        group='hhmale' 
     #source indicator
     source='Long term set (midline-endline)'
     rawdf=pd.read_stata(dta)
@@ -203,3 +209,5 @@ long_term=pd.concat(longt_dfs, axis=0)
 #export datasets
 short_term.to_csv(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\4. Output\Resultsset\short_term.csv")
 long_term.to_csv(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\4. Output\Resultsset\long_term.csv")
+
+
