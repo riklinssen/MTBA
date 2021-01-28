@@ -85,7 +85,6 @@ for dta in long_term:
     stats=stats.T
     stats.columns = stats.iloc[0]
     stats=stats.drop(stats.index[0])
-    #stats=stats.set_index('Parameter')
    
     stats['group']=group
     stats['comparison']='Baseline-endline'
@@ -100,7 +99,7 @@ result_long_term=result_long_term.drop_duplicates(keep='last')
 
 
 #export to excel
-writer = pd.ExcelWriter(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\4. Output\MTBA_endline_tables_INPUT.xlsx", engine='xlsxwriter')
+writer = pd.ExcelWriter(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\4. Output\MTBA_endline_tables_INPUT_UPDATE.xlsx", engine='xlsxwriter')
 
 result_short_term.to_excel(writer, sheet_name='midline_endline')
 result_long_term.to_excel(writer, sheet_name='baseline_endline')
