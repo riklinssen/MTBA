@@ -33,7 +33,7 @@ currentwd_path = Path.cwd()
 data_path = currentwd_path / "data"
 cleandata_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\2. Clean")
 labels_path = currentwd_path.parent/"docs"
-graphs_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\visuals")
+graphs_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\4. Output\visuals_report_mtba")
 
 
 clean=pd.read_stata(cleandata_path/"5. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
@@ -54,7 +54,7 @@ varlabel_dict=varlabel_df['label'].to_dict()
 
 ##descriptive stats. 
 
-###number of respondents. 
+###number of respondents. GIRLS
 period_names_col = {
     'Baseline': '#0B9CDA',
     'Midline': '#53297D',
@@ -550,5 +550,108 @@ for ax in fig.axes:
 axes[0,0].axis('off')
 fig.text(0,0, 'Source: MTBA Endline studies n total='+str(len(clean['HHoccupation1'].dropna())) + ' household-heads.', fontsize='small', color='grey')
 fig.savefig(filename, bbox_inches='tight')
+
+
+
+
+###number of respondents. Households
+
+#check in which indicator we have the smallest nr of households (as these will be in the matching this will be listwise missing in all subsequent analyses)
+
+
+period_names_col = {
+    'Baseline': '#0B9CDA',
+    'Midline': '#53297D',
+    'Endline': '#630235'}
+
+#anno options for headings
+title_anno_opts = dict(xy=(0.5, 0.5), size='small', xycoords='axes fraction',
+                       va='center', ha='center')
+
+idx=pd.IndexSlice
+
+
+filename=graphs_path/'nrofobs_households_by_time_province.svg'
+sns.set_style('ticks')
+
+fig, axes = plt.subplots(nrows=4, ncols=len(period_names_col.keys()), sharex='col', sharey='row', figsize=(
+    4, 4), gridspec_kw={'height_ratios': [1, 3, 3, 3 ]})
+
+#totals
+#take in hh-set if hhgender= not missing. 
+for col in ['HHhhhead_female',  'HHliteracyrate',  'HHnrhhmembers',  'HHdependency',  'PPI_likelihood_inter_200']:
+    print("indicator:", col) 
+    print("nrmissing:", clean[col].isnull().sum())
+#most missings in hh head female
+data =clean.dropna(subset=['HHhhhead_female']).groupby(['grouping_period', 'grouping_total']).size().to_frame()
+data.columns=['nrobs']
+
+data['label']='no. of households'
+# title row.
+for i,period in enumerate(period_names_col.keys()):
+    axes[0,i].annotate(period, **title_anno_opts, color=period_names_col[period])
+    # remove spines
+    axes[0,i].axis('off')
+
+#total
+for i,period in enumerate(period_names_col.keys()):
+    #axes[1,i].set_xlim(0, 1)
+    sel=data.loc[idx[period,:,:],:]
+    axes[1,i].barh(y=sel['label'], width=sel['nrobs'], color=period_names_col[period])
+    # remove spines)
+    # labels
+    for p in axes[1,i].patches:
+        # get_width pulls left or right; get_y pushes up or down
+        axes[1,i].text(p.get_width()/2, (p.get_y()+p.get_height()/2), "{:,}".format(
+            p.get_width()), color='white', verticalalignment='center', horizontalalignment='center', size='small')
+    if i == 0:
+        axes[1,i].set_ylabel('Total', fontstyle='oblique')
+    
+    sns.despine(ax=axes[1,i])
+
+
+#sindh
+data =clean.loc[clean['grouping_province']=='Sindh'].groupby(['grouping_period', 'grouping_total']).size().to_frame()
+data.columns=['nrobs']
+data['label']='no. of households'
+for i,period in enumerate(period_names_col.keys()):
+    sel=data.loc[idx[period,:,:],:]
+    axes[2,i].barh(y=sel['label'], width=sel['nrobs'], color=period_names_col[period])
+    # remove spines)
+    # labels
+    for p in axes[2,i].patches:
+        # get_width pulls left or right; get_y pushes up or down
+        axes[2,i].text(p.get_width()+0.05,  (p.get_y()+p.get_height()/2), "{:,}".format(
+            p.get_width()), color=p.get_facecolor(), verticalalignment='center', size='small')
+    if i == 0:
+        axes[2,i].set_ylabel('Sindh', fontstyle='oblique')
+    
+    sns.despine(ax=axes[2,i])
+
+
+#punjab
+data =clean.loc[clean['grouping_province']=='Punjab'].groupby(['grouping_period', 'grouping_total']).size().to_frame()
+data.columns=['nrobs']
+data['label']='no. of households'
+for i,period in enumerate(period_names_col.keys()):
+    sel=data.loc[idx[period,:,:],:]
+    axes[3,i].barh(y=sel['label'], width=sel['nrobs'], color=period_names_col[period])
+    # remove spines)
+    # labels
+    for p in axes[3,i].patches:
+        # get_width pulls left or right; get_y pushes up or down
+        axes[3,i].text(p.get_width()+0.05,  (p.get_y()+p.get_height()/2), "{:,}".format(
+            p.get_width()), color=p.get_facecolor(), verticalalignment='center', size='small')
+    if i == 0:
+        axes[3,i].set_ylabel('Punjab', fontstyle='oblique')
+    
+    sns.despine(ax=axes[3,i])
+
+#some stuff on all axes.
+for ax in fig.axes: 
+    ax.set_xlim(0,1200)
+fig.align_ylabels()
+fig.savefig(filename, bbox_inches='tight')
+
 
 

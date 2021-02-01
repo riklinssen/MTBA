@@ -33,7 +33,7 @@ currentwd_path = Path.cwd()
 data_path = currentwd_path / "data"
 cleandata_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\2. Clean")
 labels_path = currentwd_path.parent/"docs"
-graphs_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\visuals")
+graphs_path = Path(r"C:\Users\RikL\Box\ONL-IMK\2.0 Projects\Current\16-01 MTBA\07.2 Statistical analyses - Endline\Data analysis\4. Output\visuals_report_mtba")
 
 
 clean=pd.read_stata(cleandata_path/"5. MTBA Endline Cleaning 5 - Incl outcome indicators.dta")
@@ -172,6 +172,9 @@ for ax in fig.axes:
 fig.align_ylabels()
 fig.text(0,0, 'Source: MTBA Endline studies n total='+str(len(clean[outcome].dropna())) + ' girls (baseline+midline+endline).', fontsize='small', color='grey')
 fig.savefig(filename, bbox_inches='tight')
+
+
+
 
 
 
