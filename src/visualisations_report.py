@@ -101,7 +101,9 @@ disag_groups_colors = {'Total': '#0C884A', 'Punjab': '#0B9CDA', 'Sindh': '#E4398
 
 # try visualisation
 # #set disagrregations
-disaggregations = ['by_Total_Province', 'by_CM', 'by_hh_head']
+
+
+disaggregations = ['by_CM', 'by_hh_head']
 
 for dis in disaggregations:
     disag = dis
@@ -123,7 +125,7 @@ for dis in disaggregations:
         outfile = graphs_path/disag/filename
 
         fig, axes = plt.subplots(nrows=4, ncols=1, sharex='col', sharey='col', gridspec_kw={
-            'height_ratios': [2, 3, 3, 3]}, figsize=(4, 6))
+            'height_ratios': [3, 3, 3, 3]}, figsize=(4, 6))
 
         proportion = meta.at[outcome, 'prop']
         title = str(meta.at[outcome, 'label']).replace(r'\n', '\n')
@@ -183,7 +185,6 @@ for dis in disaggregations:
                                      control['upper'], color='grey', alpha=0.2, clip_on=False)
             #ylabel
             #make nicer ylabels
-            ylabeltje = None
             if gr == 'atriskcm':
                 ylabeltje = 'At risk of CM'
             if gr == 'affectedcm':
@@ -194,11 +195,11 @@ for dis in disaggregations:
                 ylabeltje = 'Female headed households'
             if gr == 'hhmale':
                 ylabeltje = 'Male headed households'
-            else:
+            if gr in ['Total', 'Punjab', 'Sindh']:
                 ylabeltje = gr
+            
+            axes[i].set_ylabel(ylabeltje, color=disag_groups_colors[gr], fontstyle='oblique')
 
-            axes[i].set_ylabel(
-                ylabeltje, color=disag_groups_colors[gr], fontstyle='oblique')
             # y-axis format
             if proportion == True:
                 ylow, yhigh = (0, 1)
@@ -208,6 +209,128 @@ for dis in disaggregations:
                 ylow, yhigh = meta.at[outcome, 'min'], meta.at[outcome, 'max']
             axes[i].set_ylim(ylow, yhigh)
             
+            fig.align_ylabels()
+            #despine + footnotes
+            sns.despine(ax=axes[i], offset=5)
+            fig.text(0, 0, 'Source: MTBA Endline studies\nMatched-estimates (repeated cross-sections)\nShaded areas represent 95% CI of the mean.',
+                     fontsize='small', color='grey')
+            fig.savefig(outfile, bbox_inches='tight')
+            fig.show()
+            print(outcome, 'by:', disag, 'saved in: ', outfile)
+
+
+
+##############################by hh head (only 2 grapjhs)
+
+
+
+disaggregations = ['by_hh_head']
+
+for dis in disaggregations:
+    disag = dis
+    # select relevant data and groups
+    dissagregation_df = alldata.loc[alldata['disag'] == disag]
+    groups_l = None
+    groups_l = [
+        gr for gr in disag_groups_colors.keys() if gr in dissagregation_df.index.get_level_values('group')]
+    periods_srt = {'Baseline': 0, 'Midline': 1, 'Endline': 2}
+
+    #get list of outcomes
+    outcomes = None
+    outcomes = [o for o in dissagregation_df.index.get_level_values(
+        'variable').unique()]
+
+    #plot loop
+    for outcome in outcomes:
+        filename = outcome+disag+".svg"
+        outfile = graphs_path/disag/filename
+
+        fig, axes = plt.subplots(nrows=3, ncols=1, sharex='col', sharey='col', gridspec_kw={
+            'height_ratios': [3, 3, 3]}, figsize=(4, 6))
+
+        proportion = meta.at[outcome, 'prop']
+        title = str(meta.at[outcome, 'label']).replace(r'\n', '\n')
+
+        print("visualising:", str(outcome), " by ", disag)
+        # title box
+        axes[0].annotate(title, **title_anno_opts, color='black')
+        axes[0].axis('off')
+        #select treatment and control data.
+        for i, gr in enumerate(groups_l, start=1):
+            treatment = dissagregation_df.loc[idx[gr, outcome, :, 'treated']].droplevel(
+                ['group', 'variable']).reset_index()
+            treatment['srt'] = treatment['period'].map(periods_srt)
+            treatment = treatment.sort_values(by='srt')
+            #sometimes proportions are 0-100, mistake in data.
+            if (proportion == True) and (treatment['Mean'].max() > 1):
+                for col in ['Mean', 'sem', 'upper', 'lower']:
+                    treatment[col] = treatment[col]/100
+
+            control = dissagregation_df.loc[idx[gr, outcome, :, 'control']].droplevel(
+                ['group', 'variable']).reset_index()
+            if (proportion == True) and (control['Mean'].max() > 1):
+                for col in ['Mean', 'sem', 'upper', 'lower']:
+                    control[col] = treatment[col]/100
+
+            control['srt'] = control['period'].map(periods_srt)
+            control = control.sort_values(by='srt')
+            #plot treatment
+
+            if treatment.empty:  # sometimes there is only missing data
+                axes[i].annotate('no data', **title_anno_opts_centered, color=disag_groups_colors[gr])
+                axes[i].axis('off')
+
+            else:
+                axes[i].plot(treatment['period'], treatment['Mean'],
+                             marker='o', color=disag_groups_colors[gr], clip_on=False)
+                axes[i].fill_between(treatment['period'], treatment['lower'], treatment['upper'],
+                                     color=disag_groups_colors[gr], alpha=0.2, clip_on=False)
+                #labels
+                if proportion == False:
+                    for key, row in treatment.iterrows():
+                        axes[i].text(x=row['period'], y=row['Mean']+0.07, s="{:.1f}".format(round(
+                            row['Mean'], 1)), va='bottom', ha='center', size='x-small', color=disag_groups_colors[gr])
+                if proportion == True:
+                    for key, row in treatment.iterrows():
+                        axes[i].text(x=row['period'], y=row['Mean']+0.07, s='{:.0%}'.format(
+                            row['Mean']), va='bottom', ha='center', size='x-small', color=disag_groups_colors[gr])
+            #plot control
+            if control.empty:
+                axes[i].annotate('no data', **title_anno_opts,
+                                 color=disag_groups_colors[gr])
+                axes[i].axis('off')
+            else:
+                axes[i].plot(control['period'], control['Mean'],
+                             marker='o', color='grey', clip_on=False)
+                axes[i].fill_between(control['period'], control['lower'],
+                                     control['upper'], color='grey', alpha=0.2, clip_on=False)
+            #ylabel
+            #make nicer ylabels
+            if gr == 'atriskcm':
+                ylabeltje = 'At risk of CM'
+            if gr == 'affectedcm':
+                ylabeltje = 'Affected by CM'
+            if gr == 'neithercm':
+                ylabeltje = 'Neither at risk\nnor affected CM'
+            if gr == 'hhfemale':
+                ylabeltje = 'Female headed households'
+            if gr == 'hhmale':
+                ylabeltje = 'Male headed households'
+            if gr in ['Total', 'Punjab', 'Sindh']:
+                ylabeltje = gr
+            
+            axes[i].set_ylabel(ylabeltje, color=disag_groups_colors[gr], fontstyle='oblique')
+
+            # y-axis format
+            if proportion == True:
+                ylow, yhigh = (0, 1)
+                axes[i].yaxis.set_major_formatter(
+                    PercentFormatter(xmax=1, decimals=0))
+            if proportion == False:
+                ylow, yhigh = meta.at[outcome, 'min'], meta.at[outcome, 'max']
+            axes[i].set_ylim(ylow, yhigh)
+            
+            fig.align_ylabels()
             #despine + footnotes
             sns.despine(ax=axes[i], offset=5)
             fig.text(0, 0, 'Source: MTBA Endline studies\nMatched-estimates (repeated cross-sections)\nShaded areas represent 95% CI of the mean.',
