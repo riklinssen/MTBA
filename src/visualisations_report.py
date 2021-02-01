@@ -97,7 +97,7 @@ idx = pd.IndexSlice
 
 # disag_groups_colors is sorted.
 disag_groups_colors = {'Total': '#0C884A', 'Punjab': '#0B9CDA', 'Sindh': '#E43989',
-                       'atriskcm': '#F16E22', 'affectedcm': '#53297D', 'neithercm': '#630235'}
+                       'atriskcm': '#F16E22', 'affectedcm': '#53297D', 'neithercm': '#630235', 'hhfemale': 'blue',  'hhmale': 'red'  }
 
 # try visualisation
 # #set disagrregations
@@ -313,9 +313,9 @@ for dis in disaggregations:
             if gr == 'neithercm':
                 ylabeltje = 'Neither at risk\nnor affected CM'
             if gr == 'hhfemale':
-                ylabeltje = 'Female headed households'
+                ylabeltje = 'Female\nheaded households'
             if gr == 'hhmale':
-                ylabeltje = 'Male headed households'
+                ylabeltje = 'Male\nheaded households'
             if gr in ['Total', 'Punjab', 'Sindh']:
                 ylabeltje = gr
             
