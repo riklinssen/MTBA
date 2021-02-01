@@ -29,9 +29,10 @@ Source data for this project not public (as of Dec 2020) available on request.
 │   ├───descr_stats.py      <-script to generate descriptive statistics for presentations
 │   ├───KPI_scales.py       <-script for visuals KPI's for scales (loaded in CSV instead of dta)
 │   └───KPIs.py              <-script to generate visuals for KPI's
-│   ├───descr_stats_report_combined_graphs.py      <-script to generate descriptive statistics for report
-│   ├───merge_analyses_report.py      <-script to merge dif in dif results for table with results overview
-
+│   ├───descr_stats_report_combined_graphs.py      <-script to generate descriptive statistics for report (1)
+│   ├───merge_analyses_report_tables.py      <-script to merge dif in dif results for table with results  overview (2)
+│   ├───merge_analyses_report_visuals.py      <-script to merge dif in dif results for visualisations (3)
+│   └───visualisations_report.py      <-script to merge dif in dif results for visualisations in report (4)
 │
 └───requirements.txt   <- file that lists python packages used. Use pip install -r requirements.txt
 ```
